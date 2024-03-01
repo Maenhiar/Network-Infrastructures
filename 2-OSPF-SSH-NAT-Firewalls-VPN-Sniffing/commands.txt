@@ -1,0 +1,3 @@
+# SSH port forwarding command of point 10
+
+ssh -NL 1194:200.0.2.1:1194 myuser1@200.0.1.5

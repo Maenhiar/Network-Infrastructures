@@ -1,0 +1,13 @@
+/etc/init.d/networking restart
+/etc/init.d/quagga restart
+
+# 3 Source NAT
+iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+
+# 4 Block all traffic unless is instantiated by the respective NATted subnets
+iptables -A FORWARD -o eth1 -m state --state NEW -j DROP
+iptables -A FORWARD -m state --state RELATED,ESTABLISHED -j ACCEPT
+
+# 8 Redirect
+iptables -t nat -I PREROUTING -i eth0 -p tcp --dport 1194 -j DNAT --to-destination 192.168.0.100:5000
+iptables -I FORWARD -o eth1 -p tcp -d 192.168.0.100 --dport 5000 -m state --state NEW -j ACCEPT
